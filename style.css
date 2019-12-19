@@ -1,0 +1,51 @@
+body {
+  background-color: rgb(214, 209, 208);
+}
+
+h1 {
+  text-align: center;
+}
+
+#question-number {
+  font-size: x-large;
+}
+
+#question-title {
+  font-size: x-large;
+  text-align: center;
+}
+
+#student-id {
+  display: block;
+  width: 30%;
+  margin: auto;
+  font-size: x-large;
+}
+
+#start-button {
+  display: block;
+  margin: auto;
+  margin-top: 10px;
+  width: 15%;
+  font-size: x-large;
+}
+
+#timer-display {
+  font-size: x-large;
+}
+
+.clock {
+  font-size: x-large;
+}
+
+.choice-button {
+  width: 15%;
+  font-size: x-large;
+  margin-top: 10px;
+}
+
+.choice-li {
+  margin: auto;
+  text-decoration: none;
+  list-style-type: none;
+}
