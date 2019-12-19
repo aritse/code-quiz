@@ -128,6 +128,7 @@ function createElements() {
   title.setAttribute("id", "title");
 
   const choices = document.createElement("div");
+  choices.setAttribute("id", "choices");
   choices.addEventListener("click", nextQuestion);
   for (let i = 0; i < 4; i++) {
     const choice = document.createElement("button");

@@ -1,51 +1,49 @@
-body {
-  background-color: rgb(214, 209, 208);
+button {
+  background-color: #5808a2;
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
+  border-style: none;
+  margin: 10px;
+  font-size: large;
 }
 
-h1 {
+button:hover,
+:disabled {
+  background-color: #8822e6;
+}
+
+#welcome {
   text-align: center;
 }
 
-#question-number {
-  font-size: x-large;
+#question {
+  display: inline-block;
 }
 
-#question-title {
-  font-size: x-large;
+#choices button {
+  display: block;
+}
+
+#start {
+  font-size: xx-large;
+}
+
+#highscores input {
+  display: block;
+}
+
+#highscores {
   text-align: center;
 }
 
-#student-id {
-  display: block;
-  width: 30%;
-  margin: auto;
-  font-size: x-large;
+#over {
+  text-align: center;
 }
 
-#start-button {
-  display: block;
-  margin: auto;
-  margin-top: 10px;
-  width: 15%;
-  font-size: x-large;
-}
-
-#timer-display {
-  font-size: x-large;
-}
-
-.clock {
-  font-size: x-large;
-}
-
-.choice-button {
-  width: 15%;
-  font-size: x-large;
-  margin-top: 10px;
-}
-
-.choice-li {
-  margin: auto;
-  text-decoration: none;
-  list-style-type: none;
+#header {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  margin-bottom: 40px;
 }
