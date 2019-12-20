@@ -65,7 +65,7 @@ function renderHeader() {
   const highScores = document.createElement("a");
   highScores.setAttribute("id", "highscores");
   highScores.setAttribute("href", "");
-  highScores.addEventListener("click", viewHighscores);
+  highScores.addEventListener("click", viewHighScores);
   highScores.textContent = "Highscores";
 
   const points = document.createElement("span");
@@ -92,17 +92,17 @@ function renderWelcome() {
   const instruction = document.createElement("p");
   instruction.textContent = "Answer the following questions within the time limit. Keep in mind that incorrect answers will penalize your score.";
 
-  const start = document.createElement("button");
-  start.setAttribute("id", "start");
-  start.addEventListener("click", startQuiz);
-  start.textContent = "Start";
+  const startButton = document.createElement("button");
+  startButton.setAttribute("id", "start");
+  startButton.addEventListener("click", startQuiz);
+  startButton.textContent = "Start";
 
   const welcome = document.createElement("div");
   welcome.setAttribute("id", "welcome");
 
   welcome.appendChild(title);
   welcome.appendChild(instruction);
-  welcome.appendChild(start);
+  welcome.appendChild(startButton);
 
   document.body.appendChild(welcome);
 }
@@ -136,13 +136,13 @@ function createElements() {
     choices.appendChild(choice);
   }
 
-  const question = document.createElement("div");
-  question.setAttribute("id", "question");
-  question.appendChild(progress);
-  question.appendChild(title);
-  question.appendChild(choices);
+  const questionSection = document.createElement("div");
+  questionSection.setAttribute("id", "question-section");
+  questionSection.appendChild(progress);
+  questionSection.appendChild(title);
+  questionSection.appendChild(choices);
 
-  document.body.appendChild(question);
+  document.body.appendChild(questionSection);
 }
 
 function loadQuestion() {
@@ -181,16 +181,15 @@ function clearLocalStorage(event) {
   event.preventDefault();
   localStorage.clear();
   this.disabled = true;
-  const highscores = document.querySelector("#highscores");
-  highscores.parentNode.removeChild(highscores);
+  const highScores = document.querySelector("#highscores");
+  highScores.parentNode.removeChild(highScores);
 }
 
-function viewHighscores(event) {
+function viewHighScores(event) {
   event.preventDefault();
   document.body.innerHTML = "";
 
   const goBackButton = document.createElement("button");
-  goBackButton.setAttribute("id", "goback");
   goBackButton.addEventListener("click", renderStartPage);
   goBackButton.textContent = "Go Back";
 
@@ -257,8 +256,8 @@ function saveScore(event) {
 function doneQuiz(message) {
   clearInterval(interval);
 
-  const question = document.querySelector("#question");
-  question.parentNode.removeChild(question);
+  const questionSection = document.querySelector("#question-section");
+  questionSection.parentNode.removeChild(questionSection);
 
   const done = document.createElement("h2");
   done.textContent = message;
