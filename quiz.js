@@ -237,10 +237,10 @@ function nextQuestion(event) {
 }
 
 function countDown() {
-  const timerDisplay = document.querySelector("#time");
+  const time = document.querySelector("#time");
   if (secondsLeft > 0) {
     secondsLeft--;
-    timerDisplay.textContent = "Time: " + secondsLeft;
+    time.textContent = "Time: " + secondsLeft;
   } else {
     doneQuiz("Time out");
   }
