@@ -52,7 +52,7 @@ const questions = [
   }
 ];
 const numOfQuestions = questions.length;
-const secPerQuestion = 15;
+const secPerQuestion = 10;
 const timeLimit = secPerQuestion * numOfQuestions;
 
 let quizScore;
@@ -147,7 +147,7 @@ function createElements() {
 
 function loadQuestion() {
   if (currentQuestion >= numOfQuestions) {
-    doneQuiz();
+    doneQuiz("All questions answered");
     return;
   }
 
@@ -189,37 +189,37 @@ function viewHighscores(event) {
   event.preventDefault();
   document.body.innerHTML = "";
 
-  const goback = document.createElement("button");
-  goback.setAttribute("id", "goback");
-  goback.addEventListener("click", renderStartPage);
-  goback.textContent = "Go Back";
+  const goBackButton = document.createElement("button");
+  goBackButton.setAttribute("id", "goback");
+  goBackButton.addEventListener("click", renderStartPage);
+  goBackButton.textContent = "Go Back";
 
-  const clear = document.createElement("button");
-  clear.setAttribute("id", "clear");
-  clear.addEventListener("click", clearLocalStorage);
-  clear.textContent = "Clear";
+  const clearButton = document.createElement("button");
+  clearButton.setAttribute("id", "clear");
+  clearButton.addEventListener("click", clearLocalStorage);
+  clearButton.textContent = "Clear";
 
   const students = Object.keys(localStorage).filter(key => key.startsWith("Student:"));
   if (students.length == 0) {
     const h3 = document.createElement("h3");
     h3.textContent = "There is no data";
     document.body.appendChild(h3);
-    clear.disabled = true;
+    clearButton.disabled = true;
   } else {
-    const highscores = document.createElement("div");
-    highscores.setAttribute("id", "highscores");
+    const highScores = document.createElement("div");
+    highScores.setAttribute("id", "highscores");
     for (let i = 0; i < students.length; i++) {
       const input = document.createElement("input");
       input.readOnly = true;
       const score = localStorage.getItem(students[i]);
       input.value = students[i].split(":")[1] + ":" + score;
-      highscores.appendChild(input);
+      highScores.appendChild(input);
     }
-    document.body.appendChild(highscores);
+    document.body.appendChild(highScores);
   }
 
-  document.body.appendChild(goback);
-  document.body.appendChild(clear);
+  document.body.appendChild(goBackButton);
+  document.body.appendChild(clearButton);
 }
 
 function nextQuestion(event) {
@@ -243,7 +243,7 @@ function countDown() {
     secondsLeft--;
     timerDisplay.textContent = "Time: " + secondsLeft;
   } else {
-    doneQuiz();
+    doneQuiz("Time out");
   }
 }
 
@@ -254,14 +254,14 @@ function saveScore(event) {
   renderStartPage();
 }
 
-function doneQuiz() {
+function doneQuiz(message) {
   clearInterval(interval);
 
   const question = document.querySelector("#question");
   question.parentNode.removeChild(question);
 
   const done = document.createElement("h2");
-  done.textContent = "All Done";
+  done.textContent = message;
 
   quizScore = calculateScore();
   const grade = document.createElement("h4");
@@ -273,9 +273,9 @@ function doneQuiz() {
   const initials = document.createElement("input");
   initials.setAttribute("id", "initials");
 
-  const submit = document.createElement("button");
-  submit.addEventListener("click", saveScore);
-  submit.textContent = "Submit";
+  const submitButton = document.createElement("button");
+  submitButton.addEventListener("click", saveScore);
+  submitButton.textContent = "Submit";
 
   const over = document.createElement("div");
   over.setAttribute("id", "over");
@@ -284,7 +284,7 @@ function doneQuiz() {
   over.appendChild(grade);
   over.appendChild(label);
   over.appendChild(initials);
-  over.appendChild(submit);
+  over.appendChild(submitButton);
 
   document.body.appendChild(over);
 }
@@ -293,4 +293,4 @@ function calculateScore() {
   return numOfCorrect > 0 ? numOfCorrect * secPerQuestion + secondsLeft : 0;
 }
 
-renderStartPage();
+window.onload = renderStartPage;
