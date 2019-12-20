@@ -58,16 +58,17 @@ const timeLimit = secPerQuestion * numOfQuestions;
 let quizScore;
 let currentQuestion;
 let numOfCorrect;
-let interval;
 let secondsLeft;
 
-window.onload = loadPage;
+let interval;
 
-function loadPage() {
+window.onload = loadStartPage;
+
+function loadStartPage() {
   initializeGlobals();
   clearPage();
   renderHeader();
-  renderInstruction();
+  renderWelcome();
 }
 
 function initializeGlobals() {
@@ -87,74 +88,73 @@ function renderHeader() {
   highScores.addEventListener("click", viewHighScores);
   highScores.textContent = "High Scores";
 
-  const correctBoard = document.createElement("span");
-  correctBoard.setAttribute("id", "correct-board");
-  correctBoard.textContent = "Correct: " + numOfCorrect;
+  const correctAnswers = document.createElement("span");
+  correctAnswers.setAttribute("id", "correct-answers");
+  correctAnswers.textContent = "Correct: " + numOfCorrect;
 
-  const timeBoard = document.createElement("span");
-  timeBoard.setAttribute("id", "time-board");
-  timeBoard.textContent = "Time: " + timeLimit;
+  const timeLeft = document.createElement("span");
+  timeLeft.setAttribute("id", "time");
+  timeLeft.textContent = "Time: " + secondsLeft;
 
   const header = document.createElement("div");
   header.setAttribute("id", "header");
   header.appendChild(highScores);
-  header.appendChild(correctBoard);
-  header.appendChild(timeBoard);
+  header.appendChild(correctAnswers);
+  header.appendChild(timeLeft);
 
   document.body.appendChild(header);
 }
 
 function viewHighScores() {
-  // fix this function later
   clearPage();
 
-  const goBackButton = document.createElement("button");
-  goBackButton.addEventListener("click", loadPage);
-  goBackButton.textContent = "Go Back";
+  const backButton = document.createElement("button");
+  backButton.addEventListener("click", loadStartPage);
+  backButton.textContent = "Go Back";
 
   const clearButton = document.createElement("button");
   clearButton.addEventListener("click", clearLocalStorage);
   clearButton.textContent = "Clear";
 
-  const students = Object.keys(localStorage).filter(key => key.startsWith("Student:"));
-  if (students.length == 0) {
-    const h3 = document.createElement("h3");
-    h3.textContent = "There is no data";
-    document.body.appendChild(h3);
-    clearButton.disabled = true;
+  const keys = Object.keys(localStorage).filter(k => k.startsWith("Quiz"));
+  if (keys.length > 0) {
+    const ranking = document.createElement("ol");
+    keys.forEach(key => {
+      const score = localStorage.getItem(key);
+      const initials = key.split(": ")[1];
+
+      const entry = document.createElement("li");
+      entry.textContent = initials + ": " + score;
+      ranking.appendChild(entry);
+    });
+    document.body.appendChild(ranking);
   } else {
-    const highScores = document.createElement("div");
-    highScores.setAttribute("id", "highscores");
-    for (let i = 0; i < students.length; i++) {
-      const input = document.createElement("input");
-      input.readOnly = true;
-      const score = localStorage.getItem(students[i]);
-      input.value = students[i].split(":")[1] + ":" + score;
-      highScores.appendChild(input);
-    }
-    document.body.appendChild(highScores);
+    const message = document.createElement("p");
+    message.textContent = "There is no data";
+    clearButton.disabled = true;
+    document.body.appendChild(message);
   }
 
-  document.body.appendChild(goBackButton);
+  document.body.appendChild(backButton);
   document.body.appendChild(clearButton);
 }
 
-function renderInstruction() {
-  const title = document.createElement("h1");
-  title.textContent = "Coding Quiz Challenge";
+function renderWelcome() {
+  const greeting = document.createElement("h1");
+  greeting.textContent = "Coding Quiz Challenge";
 
   const instruction = document.createElement("p");
-  instruction.textContent = "Answer the following questions within the time limit. Keep in mind that incorrect answers will penalize your score.";
+  instruction.textContent =
+    "Answer the following questions within the time limit. Keep in mind that incorrect answers will penalize your score by reducing the time limit by 10 seconds.";
 
   const startButton = document.createElement("button");
-  startButton.setAttribute("id", "start");
   startButton.addEventListener("click", startQuiz);
-  startButton.textContent = "Start";
+  startButton.textContent = "Start Quiz";
 
   const welcome = document.createElement("div");
   welcome.setAttribute("id", "welcome");
 
-  welcome.appendChild(title);
+  welcome.appendChild(greeting);
   welcome.appendChild(instruction);
   welcome.appendChild(startButton);
 
@@ -163,78 +163,72 @@ function renderInstruction() {
 
 function startQuiz(event) {
   event.preventDefault();
-  initializeGlobals();
-
-  const time = document.querySelector("#time-board");
-  time.textContent = "Time:" + secondsLeft;
-
-  const welcome = document.querySelector("#welcome");
-  welcome.parentNode.removeChild(welcome);
-
-  createElements();
-  loadQuestion();
+  clearPage();
+  renderHeader();
+  createQuestionContainer();
+  loadQuestionData();
   interval = setInterval(countDown, 1000);
 }
 
-function createElements() {
+function createQuestionContainer() {
   const progress = document.createElement("p");
   progress.setAttribute("id", "progress");
 
-  const title = document.createElement("h2");
+  const title = document.createElement("p");
   title.setAttribute("id", "title");
 
   const choices = document.createElement("div");
-  choices.setAttribute("id", "choices");
-  choices.addEventListener("click", nextQuestion);
+  choices.addEventListener("click", evaluateAnswer);
   for (let i = 0; i < 4; i++) {
     const choice = document.createElement("button");
-    choice.setAttribute("id", "button" + i);
+    choice.setAttribute("id", "button-" + i);
     choices.appendChild(choice);
   }
 
-  const questionSection = document.createElement("div");
-  questionSection.setAttribute("id", "question-section");
-  questionSection.appendChild(progress);
-  questionSection.appendChild(title);
-  questionSection.appendChild(choices);
+  const questionContainer = document.createElement("div");
+  questionContainer.setAttribute("id", "question-container");
+  questionContainer.appendChild(progress);
+  questionContainer.appendChild(title);
+  questionContainer.appendChild(choices);
 
-  document.body.appendChild(questionSection);
+  document.body.appendChild(questionContainer);
 }
 
-function nextQuestion(event) {
+function evaluateAnswer(event) {
   event.preventDefault();
   if (event.target.matches("button")) {
     if (event.target.textContent == questions[currentQuestion].answer) {
       secondsLeft += secPerQuestion;
       numOfCorrect++;
-      document.querySelector("#correct-board").textContent = "Correct:" + numOfCorrect;
+      const correctAnswers = document.querySelector("#correct-answers");
+      correctAnswers.textContent = "Correct: " + numOfCorrect;
     } else {
       secondsLeft -= secPerQuestion;
     }
     currentQuestion++;
-    loadQuestion();
+    loadQuestionData();
   }
 }
 
-function loadQuestion() {
+function loadQuestionData() {
   if (currentQuestion >= numOfQuestions) {
     doneQuiz("All questions answered");
-    return;
-  }
+  } else {
+    const progress = document.querySelector("#progress");
+    progress.textContent = "Question " + (currentQuestion + 1) + " of " + numOfQuestions;
 
-  const progress = document.querySelector("#progress");
-  progress.textContent = "Question " + (currentQuestion + 1) + " of " + numOfQuestions;
+    const title = document.querySelector("#title");
+    title.textContent = questions[currentQuestion].title;
 
-  document.querySelector("#title").textContent = questions[currentQuestion].title;
-
-  for (let i = 0; i < 4; i++) {
-    const choice = document.querySelector("#button" + i);
-    choice.textContent = questions[currentQuestion].choices[i];
+    for (let i = 0; i < 4; i++) {
+      const choice = document.querySelector("#button-" + i);
+      choice.textContent = questions[currentQuestion].choices[i];
+    }
   }
 }
 
 function countDown() {
-  const time = document.querySelector("#time-board");
+  const time = document.querySelector("#time");
   if (secondsLeft > 0) {
     secondsLeft--;
     time.textContent = "Time: " + secondsLeft;
@@ -246,18 +240,18 @@ function countDown() {
 function doneQuiz(message) {
   clearInterval(interval);
 
-  const questionSection = document.querySelector("#question-section");
-  questionSection.parentNode.removeChild(questionSection);
+  clearPage();
+  renderHeader();
 
-  const done = document.createElement("h2");
+  const done = document.createElement("p");
   done.textContent = message;
 
   quizScore = calculateScore();
-  const grade = document.createElement("h4");
-  grade.textContent = "Your score is: " + quizScore;
+  const notification = document.createElement("p");
+  notification.textContent = "Your score is: " + quizScore;
 
   const label = document.createElement("label");
-  label.textContent = "Enter your initials: ";
+  label.textContent = "Enter your initials:";
 
   const initials = document.createElement("input");
   initials.setAttribute("id", "initials");
@@ -266,16 +260,16 @@ function doneQuiz(message) {
   submitButton.addEventListener("click", saveScore);
   submitButton.textContent = "Submit";
 
-  const over = document.createElement("div");
-  over.setAttribute("id", "over");
+  const lastPage = document.createElement("div");
+  lastPage.setAttribute("id", "over");
 
-  over.appendChild(done);
-  over.appendChild(grade);
-  over.appendChild(label);
-  over.appendChild(initials);
-  over.appendChild(submitButton);
+  lastPage.appendChild(done);
+  lastPage.appendChild(notification);
+  lastPage.appendChild(label);
+  lastPage.appendChild(initials);
+  lastPage.appendChild(submitButton);
 
-  document.body.appendChild(over);
+  document.body.appendChild(lastPage);
 }
 
 function calculateScore() {
@@ -285,8 +279,8 @@ function calculateScore() {
 function saveScore(event) {
   event.preventDefault();
   const initials = document.querySelector("#initials").value;
-  localStorage.setItem("Student: " + initials.toUpperCase(), quizScore);
-  loadPage();
+  localStorage.setItem("Quiz: " + initials.toUpperCase(), quizScore);
+  loadStartPage();
 }
 
 function clearLocalStorage(event) {
