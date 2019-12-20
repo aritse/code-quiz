@@ -61,31 +61,85 @@ let numOfCorrect;
 let interval;
 let secondsLeft;
 
+window.onload = loadPage;
+
+function loadPage() {
+  initializeGlobals();
+  clearPage();
+  renderHeader();
+  renderInstruction();
+}
+
+function initializeGlobals() {
+  quizScore = 0;
+  currentQuestion = 0;
+  numOfCorrect = 0;
+  secondsLeft = timeLimit;
+}
+
+function clearPage() {
+  document.body.innerHTML = "";
+}
+
 function renderHeader() {
-  const highScores = document.createElement("a");
-  highScores.setAttribute("id", "highscores");
-  highScores.setAttribute("href", "");
+  const highScores = document.createElement("span");
+  highScores.setAttribute("id", "high-scores");
   highScores.addEventListener("click", viewHighScores);
-  highScores.textContent = "Highscores";
+  highScores.textContent = "High Scores";
 
-  const points = document.createElement("span");
-  points.setAttribute("id", "points");
-  points.textContent = "Correct: 0";
+  const correctBoard = document.createElement("span");
+  correctBoard.setAttribute("id", "correct-board");
+  correctBoard.textContent = "Correct: " + numOfCorrect;
 
-  const time = document.createElement("span");
-  time.setAttribute("id", "time");
-  time.textContent = "Time: 0";
+  const timeBoard = document.createElement("span");
+  timeBoard.setAttribute("id", "time-board");
+  timeBoard.textContent = "Time: " + timeLimit;
 
   const header = document.createElement("div");
   header.setAttribute("id", "header");
   header.appendChild(highScores);
-  header.appendChild(points);
-  header.appendChild(time);
+  header.appendChild(correctBoard);
+  header.appendChild(timeBoard);
 
   document.body.appendChild(header);
 }
 
-function renderWelcome() {
+function viewHighScores() {
+  // fix this function later
+  clearPage();
+
+  const goBackButton = document.createElement("button");
+  goBackButton.addEventListener("click", loadPage);
+  goBackButton.textContent = "Go Back";
+
+  const clearButton = document.createElement("button");
+  clearButton.addEventListener("click", clearLocalStorage);
+  clearButton.textContent = "Clear";
+
+  const students = Object.keys(localStorage).filter(key => key.startsWith("Student:"));
+  if (students.length == 0) {
+    const h3 = document.createElement("h3");
+    h3.textContent = "There is no data";
+    document.body.appendChild(h3);
+    clearButton.disabled = true;
+  } else {
+    const highScores = document.createElement("div");
+    highScores.setAttribute("id", "highscores");
+    for (let i = 0; i < students.length; i++) {
+      const input = document.createElement("input");
+      input.readOnly = true;
+      const score = localStorage.getItem(students[i]);
+      input.value = students[i].split(":")[1] + ":" + score;
+      highScores.appendChild(input);
+    }
+    document.body.appendChild(highScores);
+  }
+
+  document.body.appendChild(goBackButton);
+  document.body.appendChild(clearButton);
+}
+
+function renderInstruction() {
   const title = document.createElement("h1");
   title.textContent = "Coding Quiz Challenge";
 
@@ -107,17 +161,19 @@ function renderWelcome() {
   document.body.appendChild(welcome);
 }
 
-function renderStartPage() {
-  document.body.innerHTML = "";
-  renderHeader();
-  renderWelcome();
-}
+function startQuiz(event) {
+  event.preventDefault();
+  initializeGlobals();
 
-function initializeGlobals() {
-  quizScore = 0;
-  currentQuestion = 0;
-  numOfCorrect = 0;
-  secondsLeft = timeLimit;
+  const time = document.querySelector("#time-board");
+  time.textContent = "Time:" + secondsLeft;
+
+  const welcome = document.querySelector("#welcome");
+  welcome.parentNode.removeChild(welcome);
+
+  createElements();
+  loadQuestion();
+  interval = setInterval(countDown, 1000);
 }
 
 function createElements() {
@@ -145,6 +201,21 @@ function createElements() {
   document.body.appendChild(questionSection);
 }
 
+function nextQuestion(event) {
+  event.preventDefault();
+  if (event.target.matches("button")) {
+    if (event.target.textContent == questions[currentQuestion].answer) {
+      secondsLeft += secPerQuestion;
+      numOfCorrect++;
+      document.querySelector("#correct-board").textContent = "Correct:" + numOfCorrect;
+    } else {
+      secondsLeft -= secPerQuestion;
+    }
+    currentQuestion++;
+    loadQuestion();
+  }
+}
+
 function loadQuestion() {
   if (currentQuestion >= numOfQuestions) {
     doneQuiz("All questions answered");
@@ -162,95 +233,14 @@ function loadQuestion() {
   }
 }
 
-function startQuiz(event) {
-  event.preventDefault();
-  initializeGlobals();
-
-  const time = document.querySelector("#time");
-  time.textContent = "Time:" + secondsLeft;
-
-  const welcome = document.querySelector("#welcome");
-  welcome.parentNode.removeChild(welcome);
-
-  createElements();
-  loadQuestion();
-  interval = setInterval(countDown, 1000);
-}
-
-function clearLocalStorage(event) {
-  event.preventDefault();
-  localStorage.clear();
-  this.disabled = true;
-  const highScores = document.querySelector("#highscores");
-  highScores.parentNode.removeChild(highScores);
-}
-
-function viewHighScores(event) {
-  event.preventDefault();
-  document.body.innerHTML = "";
-
-  const goBackButton = document.createElement("button");
-  goBackButton.addEventListener("click", renderStartPage);
-  goBackButton.textContent = "Go Back";
-
-  const clearButton = document.createElement("button");
-  clearButton.setAttribute("id", "clear");
-  clearButton.addEventListener("click", clearLocalStorage);
-  clearButton.textContent = "Clear";
-
-  const students = Object.keys(localStorage).filter(key => key.startsWith("Student:"));
-  if (students.length == 0) {
-    const h3 = document.createElement("h3");
-    h3.textContent = "There is no data";
-    document.body.appendChild(h3);
-    clearButton.disabled = true;
-  } else {
-    const highScores = document.createElement("div");
-    highScores.setAttribute("id", "highscores");
-    for (let i = 0; i < students.length; i++) {
-      const input = document.createElement("input");
-      input.readOnly = true;
-      const score = localStorage.getItem(students[i]);
-      input.value = students[i].split(":")[1] + ":" + score;
-      highScores.appendChild(input);
-    }
-    document.body.appendChild(highScores);
-  }
-
-  document.body.appendChild(goBackButton);
-  document.body.appendChild(clearButton);
-}
-
-function nextQuestion(event) {
-  event.preventDefault();
-  if (event.target.matches("button")) {
-    if (event.target.textContent == questions[currentQuestion].answer) {
-      secondsLeft += secPerQuestion;
-      numOfCorrect++;
-      document.querySelector("#points").textContent = "Correct:" + numOfCorrect;
-    } else {
-      secondsLeft -= secPerQuestion;
-    }
-    currentQuestion++;
-    loadQuestion();
-  }
-}
-
 function countDown() {
-  const time = document.querySelector("#time");
+  const time = document.querySelector("#time-board");
   if (secondsLeft > 0) {
     secondsLeft--;
     time.textContent = "Time: " + secondsLeft;
   } else {
     doneQuiz("Time out");
   }
-}
-
-function saveScore(event) {
-  event.preventDefault();
-  const initials = document.querySelector("#initials").value;
-  localStorage.setItem("Student: " + initials, quizScore);
-  renderStartPage();
 }
 
 function doneQuiz(message) {
@@ -292,4 +282,16 @@ function calculateScore() {
   return numOfCorrect > 0 ? numOfCorrect * secPerQuestion + secondsLeft : 0;
 }
 
-window.onload = renderStartPage;
+function saveScore(event) {
+  event.preventDefault();
+  const initials = document.querySelector("#initials").value;
+  localStorage.setItem("Student: " + initials.toUpperCase(), quizScore);
+  loadPage();
+}
+
+function clearLocalStorage(event) {
+  event.preventDefault();
+  localStorage.clear();
+  clearPage();
+  viewHighScores();
+}
