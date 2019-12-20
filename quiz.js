@@ -16,8 +16,8 @@ const questions = [
   },
   {
     title: "Which of the following code creates an object?",
-    choices: ["var book = Object();", "var book = new Object();", "var book = new OBJECT();", "var book = new Book();"],
-    answer: "var book = new Object();"
+    choices: ["let book = Object();", "let book = new Object();", "let book = new OBJECT();", "let book = new Book();"],
+    answer: "let book = new Object();"
   },
   {
     title: "Which of the following function of Boolean object returns a string containing the source of the Boolean object?",
@@ -55,11 +55,11 @@ const numOfQuestions = questions.length;
 const secPerQuestion = 15;
 const timeLimit = secPerQuestion * numOfQuestions;
 
-var quizScore;
-var currentQuestion;
-var numOfCorrect;
-var interval;
-var secondsLeft;
+let quizScore;
+let currentQuestion;
+let numOfCorrect;
+let interval;
+let secondsLeft;
 
 function renderHeader() {
   const highScores = document.createElement("a");
