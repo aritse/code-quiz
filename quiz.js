@@ -84,7 +84,6 @@ function clearPage() {
 
 function renderHeader() {
   const highScores = document.createElement("span");
-  highScores.setAttribute("id", "high-scores");
   highScores.addEventListener("click", viewHighScores);
   highScores.textContent = "High Scores";
 
@@ -97,7 +96,6 @@ function renderHeader() {
   timeLeft.textContent = "Time: " + secondsLeft;
 
   const header = document.createElement("div");
-  header.setAttribute("id", "header");
   header.appendChild(highScores);
   header.appendChild(correctAnswers);
   header.appendChild(timeLeft);
@@ -152,7 +150,6 @@ function renderWelcome() {
   startButton.textContent = "Start Quiz";
 
   const welcome = document.createElement("div");
-  welcome.setAttribute("id", "welcome");
 
   welcome.appendChild(greeting);
   welcome.appendChild(instruction);
@@ -186,7 +183,6 @@ function createQuestionContainer() {
   }
 
   const questionContainer = document.createElement("div");
-  questionContainer.setAttribute("id", "question-container");
   questionContainer.appendChild(progress);
   questionContainer.appendChild(title);
   questionContainer.appendChild(choices);
@@ -261,7 +257,6 @@ function doneQuiz(message) {
   submitButton.textContent = "Submit";
 
   const lastPage = document.createElement("div");
-  lastPage.setAttribute("id", "over");
 
   lastPage.appendChild(done);
   lastPage.appendChild(notification);
