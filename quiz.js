@@ -55,18 +55,18 @@ const numOfQuestions = questions.length;
 const secPerQuestion = 15;
 const timeLimit = secPerQuestion * numOfQuestions;
 
-var score;
-var current;
-var correct;
+var quizScore;
+var currentQuestion;
+var numOfCorrect;
 var interval;
 var secondsLeft;
 
 function renderHeader() {
-  const highscores = document.createElement("a");
-  highscores.setAttribute("id", "highscores");
-  highscores.setAttribute("href", "");
-  highscores.addEventListener("click", viewHighscores);
-  highscores.textContent = "Highscores";
+  const highScores = document.createElement("a");
+  highScores.setAttribute("id", "highscores");
+  highScores.setAttribute("href", "");
+  highScores.addEventListener("click", viewHighscores);
+  highScores.textContent = "Highscores";
 
   const points = document.createElement("span");
   points.setAttribute("id", "points");
@@ -78,7 +78,7 @@ function renderHeader() {
 
   const header = document.createElement("div");
   header.setAttribute("id", "header");
-  header.appendChild(highscores);
+  header.appendChild(highScores);
   header.appendChild(points);
   header.appendChild(time);
 
@@ -114,9 +114,9 @@ function renderStartPage() {
 }
 
 function initializeGlobals() {
-  score = 0;
-  current = 0;
-  correct = 0;
+  quizScore = 0;
+  currentQuestion = 0;
+  numOfCorrect = 0;
   secondsLeft = timeLimit;
 }
 
@@ -146,19 +146,19 @@ function createElements() {
 }
 
 function loadQuestion() {
-  if (current >= numOfQuestions) {
+  if (currentQuestion >= numOfQuestions) {
     doneQuiz();
     return;
   }
 
   const progress = document.querySelector("#progress");
-  progress.textContent = "Question " + (current + 1) + " of " + numOfQuestions;
+  progress.textContent = "Question " + (currentQuestion + 1) + " of " + numOfQuestions;
 
-  document.querySelector("#title").textContent = questions[current].title;
+  document.querySelector("#title").textContent = questions[currentQuestion].title;
 
   for (let i = 0; i < 4; i++) {
     const choice = document.querySelector("#button" + i);
-    choice.textContent = questions[current].choices[i];
+    choice.textContent = questions[currentQuestion].choices[i];
   }
 }
 
@@ -199,7 +199,7 @@ function viewHighscores(event) {
   clear.addEventListener("click", clearLocalStorage);
   clear.textContent = "Clear";
 
-  const students = Object.keys(localStorage).filter(key => key.startsWith("Quiz:"));
+  const students = Object.keys(localStorage).filter(key => key.startsWith("Student:"));
   if (students.length == 0) {
     const h3 = document.createElement("h3");
     h3.textContent = "There is no data";
@@ -225,14 +225,14 @@ function viewHighscores(event) {
 function nextQuestion(event) {
   event.preventDefault();
   if (event.target.matches("button")) {
-    if (event.target.textContent == questions[current].answer) {
+    if (event.target.textContent == questions[currentQuestion].answer) {
       secondsLeft += secPerQuestion;
-      correct++;
-      document.querySelector("#points").textContent = "Correct:" + correct;
+      numOfCorrect++;
+      document.querySelector("#points").textContent = "Correct:" + numOfCorrect;
     } else {
       secondsLeft -= secPerQuestion;
     }
-    current++;
+    currentQuestion++;
     loadQuestion();
   }
 }
@@ -250,7 +250,7 @@ function countDown() {
 function saveScore(event) {
   event.preventDefault();
   const initials = document.querySelector("#initials").value;
-  localStorage.setItem("Quiz:" + initials, score);
+  localStorage.setItem("Student: " + initials, quizScore);
   renderStartPage();
 }
 
@@ -263,9 +263,9 @@ function doneQuiz() {
   const done = document.createElement("h2");
   done.textContent = "All Done";
 
-  score = calculateScore();
+  quizScore = calculateScore();
   const grade = document.createElement("h4");
-  grade.textContent = "Your score is: " + score;
+  grade.textContent = "Your score is: " + quizScore;
 
   const label = document.createElement("label");
   label.textContent = "Enter your initials: ";
@@ -290,7 +290,7 @@ function doneQuiz() {
 }
 
 function calculateScore() {
-  return correct > 0 ? correct * secPerQuestion + secondsLeft : 0;
+  return numOfCorrect > 0 ? numOfCorrect * secPerQuestion + secondsLeft : 0;
 }
 
 renderStartPage();
