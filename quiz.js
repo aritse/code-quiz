@@ -84,6 +84,7 @@ function clearPage() {
 
 function renderHeader() {
   const highScores = document.createElement("span");
+  highScores.setAttribute("id", "high-scores");
   highScores.addEventListener("click", viewHighScores);
   highScores.textContent = "High Scores";
 
@@ -96,6 +97,7 @@ function renderHeader() {
   timeLeft.textContent = "Time: " + secondsLeft;
 
   const header = document.createElement("div");
+  header.className = "header";
   header.appendChild(highScores);
   header.appendChild(correctAnswers);
   header.appendChild(timeLeft);
@@ -106,11 +108,17 @@ function renderHeader() {
 function viewHighScores() {
   clearPage();
 
+  const highScores = document.createElement("h1");
+  highScores.textContent = "High Scores";
+  document.body.appendChild(highScores);
+
   const backButton = document.createElement("button");
+  backButton.setAttribute("id", "back-button");
   backButton.addEventListener("click", loadStartPage);
   backButton.textContent = "Go Back";
 
   const clearButton = document.createElement("button");
+  clearButton.setAttribute("id", "clear-button");
   clearButton.addEventListener("click", clearLocalStorage);
   clearButton.textContent = "Clear";
 
@@ -142,6 +150,7 @@ function renderWelcome() {
   greeting.textContent = "Coding Quiz Challenge";
 
   const instruction = document.createElement("p");
+  instruction.setAttribute("id", "instruction");
   instruction.textContent =
     "Answer the following questions within the time limit. Keep in mind that incorrect answers will penalize your score by reducing the time limit by 10 seconds.";
 
@@ -175,6 +184,7 @@ function createQuestionContainer() {
   title.setAttribute("id", "title");
 
   const choices = document.createElement("div");
+  choices.setAttribute("id", "choices");
   choices.addEventListener("click", evaluateAnswer);
   for (let i = 0; i < 4; i++) {
     const choice = document.createElement("button");
@@ -239,7 +249,7 @@ function doneQuiz(message) {
   clearPage();
   renderHeader();
 
-  const done = document.createElement("p");
+  const done = document.createElement("h1");
   done.textContent = message;
 
   quizScore = calculateScore();
@@ -247,7 +257,7 @@ function doneQuiz(message) {
   notification.textContent = "Your score is: " + quizScore;
 
   const label = document.createElement("label");
-  label.textContent = "Enter your initials:";
+  label.textContent = "Enter your initials: ";
 
   const initials = document.createElement("input");
   initials.setAttribute("id", "initials");
