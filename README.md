@@ -5,7 +5,10 @@ This is a timer-based application of a code quiz with multiple-choice questions.
 
 ## Screenshot
 
-![](ss1.jpg)
-![](ss2.jpg)
-![](ss3.jpg)
-![](ss4.jpg)
+![1](https://github.com/aritse/code-quiz/blob/master/ss1.JPG)
+=============================================================
+![2](https://github.com/aritse/code-quiz/blob/master/ss2.JPG)
+=============================================================
+![3](https://github.com/aritse/code-quiz/blob/master/ss3.JPG)
+=============================================================
+![4](https://github.com/aritse/code-quiz/blob/master/ss4.JPG)
